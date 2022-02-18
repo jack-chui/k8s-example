@@ -29,7 +29,7 @@ spec:
           mountPath: /var/www/html
         livenessProbe:                  # test application wheather still live. If not, kill pod and start new one.
           httpGet:
-            path: /
+            path: /wp-admin/images/wordpress-logo.svg
             port: 80
           initialDelaySeconds: 10       # when will the first test execute after the container started. If this value not correct, K8S will be loop to create and kill pod.
           periodSeconds: 30             # test period
