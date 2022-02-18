@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wordpress-pvc-1gi
+spec:
+  resources:
+    requests:
+      storage: 1Gi
+  volumeMode: Filesystem
+  storageClassName: fake-ssd    # If PVC don't declare storageClassName, K8S will assign default to it.
+  accessModes:
+    - ReadWriteOnce
+
+# Since there exist some PV fulfill 1Gi PV and storageClassName fake-ssd requirement, then this PVC wordpress-pvc-1gi will bind into pv-2Gi. (Static)
+# Delete PVC will not delete PV.

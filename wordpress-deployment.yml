@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress-deployment
+spec:
+  selector:
+    matchLabels:
+      app: wordpress-template
+  template:
+    metadata:
+      labels:
+        app: wordpress-template
+    spec:
+      containers:
+      - name: wordpress
+        image: wordpress:4.8-apache
+        env:
+          - name: WORDPRESS_DB_HOST
+            value: mysql-service
+          - name: WORDPRESS_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-secret
+                key: password
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: wordpress-pvc
+          mountPath: /var/www/html
+        livenessProbe:              # test application wheather still live. If not, kill pod and start new one.
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 10   # when will the first test execute after the container started. If this value not correct, K8S will be loop to create and kill pod.
+          periodSeconds: 5          # test period
+        readinessProbe:             # 讓Kubernetes知道您的應用何時準備好其流量服務。 如果Readiness探針開始失敗，Kubernetes將停止向該容器發送流量, 從service的後端endpoint列表中把pod隔離出去。
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 5 
+      volumes:
+      - name: wordpress-pvc
+        persistentVolumeClaim:
+          claimName: wordpress-pvc-1gi

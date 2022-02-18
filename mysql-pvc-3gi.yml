@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc-3gi
+spec:
+  resources:
+    requests:
+      storage: 3Gi
+  volumeMode: Filesystem
+  storageClassName: fake-ssd
+  accessModes:
+    - ReadWriteOnce
+
+# Since there are no available PV for 3Gi in fake-ssd, K8S will create a new PV based on StorageClass fake-ssd, then mysql-pvc-3gi PVC will bound on this new PV. (Dynamic)
+# If storageClassName do not exist in K8S, then this PVC will be on Pending status.
+# Delete PVC will also delete PV.

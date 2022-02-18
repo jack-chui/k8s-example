@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deployment
+spec:
+  selector:
+    matchLabels:
+      app: mysql-template
+  template:
+    metadata:
+      labels:
+        app: mysql-template
+    spec:
+      volumes:
+      - name: mysql-pvc
+        persistentVolumeClaim:
+          claimName: mysql-pvc-3gi
+      containers:
+      - name: mysql
+        image: mysql:5.6
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: mysql-pvc
+          mountPath: /var/lib/mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: password
